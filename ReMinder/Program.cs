@@ -1,5 +1,17 @@
-﻿using Timer.Timer.Domain;
+﻿using Timer.Timer.Controllers;
+using Timer.Timer.Domain.Types;
 
-var timer = new LocalTimer("Remind me of this!", "2h10m");
+var timerController = TimerControllerBuilder.GetInstance();
 
-Console.WriteLine(timer.ExecutionDate);
+var timerCreated = await timerController.Create(new TimerControllerCreateParams()
+{
+    Message = "Remind me of this!", 
+    WaitingTime = "2h10m"
+});
+
+var timerFound = await timerController.Read(new TimerControllerReadParams()
+{
+    Id = timerCreated.Id
+});
+
+Console.WriteLine(timerFound.ExecutionDate);

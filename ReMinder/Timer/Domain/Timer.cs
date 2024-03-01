@@ -4,22 +4,25 @@ namespace Timer.Timer.Domain;
 
 public class LocalTimer
 {
-    public string Message { get; set; }
+    public string Id { get; private set; }
     public string ExecutionDate { get; private set; }
+    public string Message { get; set; }
     
     private readonly string[] _timeUnits = ["h", "m", "s"];
 
-    public LocalTimer(string message, string waitDuration)
+    public LocalTimer(string message, string waitingTime)
     {
         Message = message;
-        ExecutionDate = CreateExecutionDate(waitDuration);
+        ExecutionDate = CreateExecutionDate(waitingTime);
+
+        Id = Guid.NewGuid().ToString();
     }
 
-    private string CreateExecutionDate(string waitDuration)
+    private string CreateExecutionDate(string waitingTime)
     {
         const string unitNotFoundError = "Unknown time unit.";
         
-        var timeUnitPairs = TransformInputIntoTimeUnitPairs(waitDuration);
+        var timeUnitPairs = TransformInputIntoTimeUnitPairs(waitingTime);
         var executionDate = DateTime.Now;
         
         for (var i = 1; i < timeUnitPairs.Count; i++)
@@ -65,13 +68,13 @@ public class LocalTimer
         return timeUnitsOrderedIncorrectly ? (false, errorMessage) : (true, null);
     }
     
-    private static List<(int, string)> TransformInputIntoTimeUnitPairs(string waitDuration)
+    private static List<(int, string)> TransformInputIntoTimeUnitPairs(string waitingTime)
     {
         List<(int, string)> timeUnitPairs = [];
             
         const string pattern = @"(\d+)(\w)";
         
-        foreach (Match match in Regex.Matches(waitDuration, pattern))
+        foreach (Match match in Regex.Matches(waitingTime, pattern))
         {
             var amount = int.Parse(match.Groups[1].Value);
             var unitType = match.Groups[2].Value;
